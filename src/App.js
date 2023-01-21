@@ -1,9 +1,21 @@
 import './App.css';
 import {Button, TextField} from "@mui/material";
+import simple_jsonrpc from "simple-jsonrpc-js";
+
+let headers = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Credentials': 'true',
+  'Access-Control-Allow-Methods': 'GET,POST,OPTIONS,DELETE,PUT',
+}
+
+let jrpc = simple_jsonrpc.connect_xhr('http://127.0.0.1:9944', headers);
 
 function App() {
   const sendExtrinsic = (n) => {
-    console.log(n);
+    // wscat -c 127.0.0.1:9944 -x '{"jsonrpc":"2.0", "id":1, "method":"author_submitExtrinsic", "params": ["0004000000"]}'
+   jrpc.call('author_submitExtrinsic', ['0004000000']).then(function(res) {
+      console.log("res:", res);
+    });
   }
 
   return (
