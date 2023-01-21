@@ -1,23 +1,32 @@
-import logo from './logo.svg';
 import './App.css';
+import {Button, TextField} from "@mui/material";
 
 function App() {
+  const sendExtrinsic = (n) => {
+    console.log(n);
+  }
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <p> Send Tokens</p>
       </header>
+      <section>
+        <div className="Inputs">
+          <div className="Input">
+            <TextField id="outlined-basic" label="From" variant="outlined" />
+          </div>
+          <div className="Input">
+            <TextField id="outlined-basic" label="To" variant="outlined" />
+          </div>
+          <div className="Input">
+            <TextField id="outlined-basic" label="Amount" variant="outlined" />
+          </div>
+        </div>
+        <div className="Button-send" onClick={() => sendExtrinsic(1233)}>
+          <Button variant="contained" color="success">Send</Button>
+        </div>
+      </section>
     </div>
   );
 }
