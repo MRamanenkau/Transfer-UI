@@ -1,20 +1,35 @@
 import './App.css';
 import {Button, TextField} from "@mui/material";
 import simple_jsonrpc from "simple-jsonrpc-js";
+import {useState} from "react";
+import { u32, Enum } from "scale-ts"
 
-let headers = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Credentials': 'true',
-  'Access-Control-Allow-Methods': 'GET,POST,OPTIONS,DELETE,PUT',
+const HTTP_NODE_URL = " http://127.0.0.1:9944";
+const jrpc = simple_jsonrpc.connect_xhr(HTTP_NODE_URL);
+
+function toHex(bytes) {
+  return bytes.reduce((output, elem) =>
+        (output + ('0' + elem.toString(16)).slice(-2)),
+    '');
 }
 
-let jrpc = simple_jsonrpc.connect_xhr('http://127.0.0.1:9944', headers);
+const Call = Enum({
+  SetValue: u32,
+});
 
 function App() {
-  const sendExtrinsic = (n) => {
-    // wscat -c 127.0.0.1:9944 -x '{"jsonrpc":"2.0", "id":1, "method":"author_submitExtrinsic", "params": ["0004000000"]}'
-   jrpc.call('author_submitExtrinsic', ['0004000000']).then(function(res) {
-      console.log("res:", res);
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
+  const [amount, setAmount] = useState("");
+
+  const sendExtrinsic = () => {
+    const encodedExtrinsic = Call.enc({
+      tag: "SetValue",
+      value: Number(amount),
+    });
+
+    jrpc.call('author_submitExtrinsic', [toHex(encodedExtrinsic)]).then(function(res) {
+      console.log("response:", res);
     });
   }
 
@@ -26,16 +41,33 @@ function App() {
       <section>
         <div className="Inputs">
           <div className="Input">
-            <TextField id="outlined-basic" label="From" variant="outlined" />
+            <TextField onChange={(e) => setFrom(e.target.value)}
+             value={from}
+             id="outlined-basic"
+             label="From"
+             variant="outlined"
+            />
           </div>
           <div className="Input">
-            <TextField id="outlined-basic" label="To" variant="outlined" />
+            <TextField
+              onChange={(e) => setTo(e.target.value)}
+              value={to}
+              id="outlined-basic"
+              label="To"
+              variant="outlined"
+            />
           </div>
           <div className="Input">
-            <TextField id="outlined-basic" label="Amount" variant="outlined" />
+            <TextField
+              onChange={(e) => setAmount(e.target.value)}
+              value={amount}
+              id="outlined-basic"
+              label="Amount"
+              variant="outlined"
+            />
           </div>
         </div>
-        <div className="Button-send" onClick={() => sendExtrinsic(1233)}>
+        <div className="Button-send" onClick={() => sendExtrinsic()}>
           <Button variant="contained" color="success">Send</Button>
         </div>
       </section>
