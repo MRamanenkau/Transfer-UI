@@ -2,7 +2,7 @@ import './App.css';
 import {Button, TextField} from "@mui/material";
 import simple_jsonrpc from "simple-jsonrpc-js";
 import {useState} from "react";
-import { u32, Enum } from "scale-ts"
+import {u32, Enum, Tuple, u128} from "scale-ts"
 
 const HTTP_NODE_URL = " http://127.0.0.1:9944";
 const jrpc = simple_jsonrpc.connect_xhr(HTTP_NODE_URL);
@@ -15,6 +15,7 @@ function toHex(bytes) {
 
 const Call = Enum({
   SetValue: u32,
+  Transfer: Tuple(u32, u32, u32),
 });
 
 function App() {
@@ -24,11 +25,12 @@ function App() {
 
   const sendExtrinsic = () => {
     const encodedExtrinsic = Call.enc({
-      tag: "SetValue",
-      value: Number(amount),
+      tag: "Transfer",
+      value: [Number(from), Number(to), Number(amount)],
     });
 
     jrpc.call('author_submitExtrinsic', [toHex(encodedExtrinsic)]).then(function(res) {
+      console.log("encodedExtrinsic:", encodedExtrinsic);
       console.log("response:", res);
     });
   }
